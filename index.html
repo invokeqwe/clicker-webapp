@@ -163,7 +163,7 @@
       clickButton.disabled = energy < energyCostPerClick;
     };
 
-    // Генерация реферальной ссылки (Генерируем только один раз и сохраняем)
+    // Генерация реферальной ссылки
     const generateReferralLink = () => {
       let userId = localStorage.getItem('userId'); // Проверка, сохранён ли уже userId
       if (!userId) {  // Если нет, генерируем и сохраняем новый
