@@ -110,7 +110,6 @@
     const energyCostPerClick = 5;
     const energyRegenPerSecond = 1;
     let earningsPerClick = 1;
-
     const clicksEl = document.getElementById('clicks');
     const energyEl = document.getElementById('energy');
     const energyBarEl = document.getElementById('energy-bar');
@@ -141,4 +140,75 @@
       if (lastTimestamp) {
         const timeElapsed = Math.floor((Date.now() - parseInt(lastTimestamp)) / 1000);
         const restoredEnergy = timeElapsed * energyRegenPerSecond;
-        energy = Math.min(max
+        energy = Math.min(maxEnergy, energy + restoredEnergy);
+      }
+    };
+
+    // Обработка реферальной ссылки
+    const processReferral = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const referrer = urlParams.get('start');
+      if (referrer) {
+        // Если перешли по реферальной ссылке
+        localStorage.setItem('referrer', referrer);
+      }
+    };
+
+    // Функция обновления UI
+    const updateUI = () => {
+      clicksEl.textContent = `Очки: ${clicks}`;
+      energyEl.textContent = `Энергия: ${energy} / ${maxEnergy}`;
+      energyBarEl.style.width = `${(energy / maxEnergy) * 100}%`;
+      document.getElementById('earnings').textContent = `Доход за клик: ${earningsPerClick}`;
+      clickButton.disabled = energy < energyCostPerClick;
+    };
+
+    // Генерация реферальной ссылки
+    const generateReferralLink = () => {
+      const botUsername = "HYYYYYYYYYYYYYYYYYibot"; // Укажите username вашего бота
+      const userId = localStorage.getItem('userId') || Math.floor(Math.random() * 100000); // Генерация уникального ID
+      const refID = `user${userId}`; // Генерация реферального ID
+      localStorage.setItem('userId', refID); // Сохраняем ID пользователя для дальнейшего использования
+      const telegramLink = `https://t.me/${botUsername}?start=${refID}`;
+      referralLinkEl.querySelector('a').href = telegramLink;
+      referralLinkEl.querySelector('a').textContent = telegramLink;
+    };
+
+    // Клик по кнопке
+    clickButton.addEventListener('click', () => {
+      if (energy >= energyCostPerClick) {
+        clicks += earningsPerClick;
+        energy -= energyCostPerClick;
+        updateUI();
+        saveData();
+      }
+    });
+
+    // Восстановление энергии
+    setInterval(() => {
+      if (energy < maxEnergy) {
+        energy = Math.min(maxEnergy, energy + energyRegenPerSecond);
+        updateUI();
+        saveData();
+      }
+    }, 1000);
+
+    // Проверка рефералов
+    const checkReferrals = () => {
+      const referrer = localStorage.getItem('referrer');
+      if (referrer) {
+        earningsPerClick *= 2; // Удваиваем доход за клик
+        energy = Math.min(maxEnergy, energy + 100); // Увеличиваем энергию
+        localStorage.removeItem('referrer'); // Убираем реферера, чтобы не повторить действие
+      }
+    };
+
+    // Инициализация
+    loadData();
+    processReferral(); // Обрабатываем реферальную ссылку
+    checkReferrals(); // Применяем изменения для владельца ссылки
+    generateReferralLink(); // Генерируем реферальную ссылку для текущего пользователя
+    updateUI();
+  </script>
+</body>
+</html>
