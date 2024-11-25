@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Кликер</title>
+  <title>Кликер с реферальной системой</title>
   <style>
-    /* Основной стиль */
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(120deg, #84fab0, #8fd3f4);
       text-align: center;
       color: #333;
+      margin: 0;
+      padding: 0;
     }
 
     button {
@@ -44,9 +45,13 @@
       transition: width 0.3s ease;
     }
 
-    table {
-      width: 80%;
+    .leaderboard {
       margin: 20px auto;
+      width: 80%;
+    }
+
+    table {
+      width: 100%;
       border-collapse: collapse;
     }
 
@@ -69,39 +74,16 @@
     tr:hover {
       background-color: #ddd;
     }
-
-    #achievement {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      animation: fadeInOut 3s forwards;
-      display: none;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; }
-    }
   </style>
 </head>
 <body>
-  <h1>Кликер</h1>
+  <h1>Кликер с реферальной системой</h1>
   <p id="click-count">Кликов: 0</p>
   <button id="click-button">Кликнуть</button>
 
   <div class="progress-bar">
     <div class="progress" id="progress-bar"></div>
   </div>
-
-  <div id="achievement">Достижение разблокировано!</div>
 
   <div class="leaderboard">
     <h2>Таблица лидеров</h2>
@@ -118,20 +100,32 @@
     </table>
   </div>
 
+  <p id="referral-info"></p>
+
   <script>
     let clicks = 0;
+    let earningsPerClick = 1; // Базовый доход за клик
+
+    // Обработчик параметров реферальной ссылки
+    const urlParams = new URLSearchParams(window.location.search);
+    const referrer = urlParams.get('ref');
+    if (referrer) {
+      earningsPerClick += 0.2; // Увеличиваем доход за клик
+      document.getElementById('referral-info').textContent = `Вы перешли по реферальной ссылке. Ваш доход за клик: ${earningsPerClick.toFixed(1)}`;
+    }
 
     document.getElementById('click-button').addEventListener('click', () => {
-      clicks++;
-      document.getElementById('click-count').textContent = `Кликов: ${clicks}`;
-      document.getElementById('progress-bar').style.width = `${clicks % 100}%`;
+      clicks += earningsPerClick;
+      document.getElementById('click-count').textContent = `Кликов: ${clicks.toFixed(1)}`;
 
-      if (clicks % 10 === 0) {
-        const achievement = document.getElementById('achievement');
-        achievement.style.display = 'block';
-        setTimeout(() => achievement.style.display = 'none', 3000);
-      }
+      // Обновление прогресс-бара
+      const progressPercentage = (clicks % 10) * 10;
+      document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
 
+      // Обновление таблицы лидеров
       const leaderboard = document.getElementById('leaderboard');
-      leaderboard.innerHTML = `<tr><td>Вы</td><td>${clicks}</td></tr>`;
-   
+      leaderboard.innerHTML = `<tr><td>Вы</td><td>${clicks.toFixed(1)}</td></tr>`;
+    });
+  </script>
+</body>
+</html>
