@@ -31,7 +31,7 @@
     h1 {
       font-size: 2rem;
       color: #4A90E2;
-      margin: 0;
+      margin: 0 0 20px;
       text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
     }
 
@@ -48,6 +48,7 @@
       height: 20px;
       border-radius: 10px;
       overflow: hidden;
+      margin: 10px 0 30px;
     }
 
     .energy-fill {
@@ -67,6 +68,7 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 10px;
     }
 
     button:hover {
@@ -100,23 +102,50 @@
   </div>
 
   <script>
+    // Переменные
     let clicks = 0;
-    let energy = 1000; // Начальное значение энергии
-    const maxEnergy = 1000; // Максимальная энергия
-    const energyCostPerClick = 5; // Энергия за клик
-    const energyRegenPerSecond = 1; // Восстановление энергии в секунду
+    let energy = 1000;
+    const maxEnergy = 1000;
+    const energyCostPerClick = 5;
+    const energyRegenPerSecond = 1;
 
+    // DOM-элементы
     const clicksEl = document.getElementById('clicks');
     const energyEl = document.getElementById('energy');
     const energyBarEl = document.getElementById('energy-bar');
     const clickButton = document.getElementById('click-button');
+
+    // Функция сохранения данных
+    const saveData = () => {
+      const now = Date.now();
+      localStorage.setItem('clicks', clicks);
+      localStorage.setItem('energy', energy);
+      localStorage.setItem('lastTimestamp', now);
+    };
+
+    // Функция загрузки данных
+    const loadData = () => {
+      const savedClicks = localStorage.getItem('clicks');
+      const savedEnergy = localStorage.getItem('energy');
+      const lastTimestamp = localStorage.getItem('lastTimestamp');
+
+      if (savedClicks !== null) clicks = parseInt(savedClicks);
+      if (savedEnergy !== null) energy = parseInt(savedEnergy);
+
+      // Восстановление энергии на основе времени простоя
+      if (lastTimestamp) {
+        const timeElapsed = Math.floor((Date.now() - parseInt(lastTimestamp)) / 1000); // секунды
+        const restoredEnergy = timeElapsed * energyRegenPerSecond;
+        energy = Math.min(maxEnergy, energy + restoredEnergy);
+      }
+    };
 
     // Функция обновления UI
     const updateUI = () => {
       clicksEl.textContent = `Очки: ${clicks}`;
       energyEl.textContent = `Энергия: ${energy} / ${maxEnergy}`;
       energyBarEl.style.width = `${(energy / maxEnergy) * 100}%`;
-      clickButton.disabled = energy < energyCostPerClick; // Блокируем кнопку, если энергии недостаточно
+      clickButton.disabled = energy < energyCostPerClick;
     };
 
     // Клик по кнопке
@@ -125,6 +154,7 @@
         clicks += 1;
         energy -= energyCostPerClick;
         updateUI();
+        saveData();
       }
     });
 
@@ -133,10 +163,12 @@
       if (energy < maxEnergy) {
         energy = Math.min(maxEnergy, energy + energyRegenPerSecond);
         updateUI();
+        saveData();
       }
     }, 1000);
 
     // Инициализация
+    loadData();
     updateUI();
   </script>
 </body>
