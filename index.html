@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кликер с Таблицей Лидеров</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    .leaderboard {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .leaderboard table {
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+    .leaderboard th, .leaderboard td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    .leaderboard th {
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // Основной компонент приложения
+    class App {
+      constructor() {
+        this.clicks = 0;
+        this.leaderboard = [
+          { name: 'User1', clicks: 50 },
+          { name: 'User2', clicks: 30 },
+          { name: 'User3', clicks: 20 },
+        ];
+      }
+
+      init() {
+        this.render();
+      }
+
+      handleClick = () => {
+        this.clicks++;
+        this.updateLeaderboard('Вы', this.clicks);
+        this.render();
+      };
+
+      updateLeaderboard = (name, clicks) => {
+        const existingUser = this.leaderboard.find(user => user.name === name);
+        if (existingUser) {
+          existingUser.clicks = clicks;
+        } else {
+          this.leaderboard.push({ name, clicks });
+        }
+        this.leaderboard.sort((a, b) => b.clicks - a.clicks);
+      };
+
+      render() {
+        const appDiv = document.getElementById('app');
+        appDiv.innerHTML = `
+          <h1>Кликер</h1>
+          <p>Кликов: ${this.clicks}</p>
+          <button id="clickButton">Кликнуть</button>
+          <div class="leaderboard">
+            <h2>Таблица лидеров</h2>
+            ${this.renderLeaderboard()}
+          </div>
+        `;
+
+        // Привязываем событие клика к кнопке
+        document.getElementById('clickButton').addEventListener('click', this.handleClick);
+      }
+
+      renderLeaderboard() {
+        return `
+          <table>
+            <thead>
+              <tr>
+                <th>Имя</th>
+                <th>Клики</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${this.leaderboard.map(user => `
+                <tr>
+                  <td>${user.name}</td>
+                  <td>${user.clicks}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+    }
+
+    // Инициализация приложения
+    const app = new App();
+    app.init();
+  </script>
+</body>
+</html>
