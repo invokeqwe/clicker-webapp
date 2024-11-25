@@ -38,21 +38,18 @@
 <body>
   <h1>Кликер</h1>
   <p class="info" id="clicks">Очки: 0</p>
-  <p class="info" id="earnings">Доход за клик: 1.0</p>
   <button id="click-button">Кликнуть</button>
 
   <script>
     let clicks = 0;
-    let earningsPerClick = 1.0;
 
     // Обновляем UI
     const updateUI = () => {
       document.getElementById('clicks').textContent = `Очки: ${clicks}`;
-      document.getElementById('earnings').textContent = `Доход за клик: ${earningsPerClick.toFixed(1)}`;
     };
 
     document.getElementById('click-button').addEventListener('click', () => {
-      clicks += earningsPerClick;
+      clicks += 1;
       updateUI();
     });
 
