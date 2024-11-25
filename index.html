@@ -159,7 +159,7 @@
       clicksEl.textContent = `Очки: ${clicks}`;
       energyEl.textContent = `Энергия: ${energy} / ${maxEnergy}`;
       energyBarEl.style.width = `${(energy / maxEnergy) * 100}%`;
-      document.getElementById('earnings').textContent = `Доход за клик: ${earningsPerClick}`;
+      document.getElementById('earnings').textContent = `Доход за клик: ${earningsPerClick}`; // Отображаем правильный доход за клик
       clickButton.disabled = energy < energyCostPerClick;
     };
 
@@ -179,7 +179,7 @@
     // Клик по кнопке
     clickButton.addEventListener('click', () => {
       if (energy >= energyCostPerClick) {
-        clicks += earningsPerClick;
+        clicks += earningsPerClick; // Теперь используется правильный доход за клик
         energy -= energyCostPerClick;
         updateUI();
         saveData();
@@ -201,6 +201,7 @@
       if (referrer) {
         earningsPerClick *= 2; // Удваиваем доход за клик
         energy = Math.min(maxEnergy, energy + 100); // Увеличиваем энергию
+        localStorage.setItem('earnings', earningsPerClick); // Сохраняем новый доход за клик
         localStorage.removeItem('referrer'); // Убираем реферера, чтобы не повторить действие
       }
     };
