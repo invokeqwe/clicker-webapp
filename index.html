@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Кликер с реферальной системой</title>
+  <title>Кликер с энергией и реферальной системой</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -29,6 +29,11 @@
     button:active {
       transform: scale(0.9);
       background-color: #45a049;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
 
     .progress-bar {
@@ -77,8 +82,9 @@
   </style>
 </head>
 <body>
-  <h1>Кликер с реферальной системой</h1>
-  <p id="click-count">Кликов: 0</p>
+  <h1>Кликер с энергией и реферальной системой</h1>
+  <p id="click-count">Очки: 0</p>
+  <p id="energy-count">Энергия: 100</p>
   <button id="click-button">Кликнуть</button>
 
   <div class="progress-bar">
@@ -91,7 +97,7 @@
       <thead>
         <tr>
           <th>Имя</th>
-          <th>Клики</th>
+          <th>Очки</th>
         </tr>
       </thead>
       <tbody id="leaderboard">
@@ -105,6 +111,8 @@
   <script>
     let clicks = 0;
     let earningsPerClick = 1; // Базовый доход за клик
+    let energy = 100; // Стартовое значение энергии
+    const energyCostPerClick = 10; // Энергия, расходуемая за клик
 
     // Обработчик параметров реферальной ссылки
     const urlParams = new URLSearchParams(window.location.search);
@@ -114,18 +122,41 @@
       document.getElementById('referral-info').textContent = `Вы перешли по реферальной ссылке. Ваш доход за клик: ${earningsPerClick.toFixed(1)}`;
     }
 
+    const updateUI = () => {
+      // Обновляем UI
+      document.getElementById('click-count').textContent = `Очки: ${clicks.toFixed(1)}`;
+      document.getElementById('energy-count').textContent = `Энергия: ${energy}`;
+      document.getElementById('progress-bar').style.width = `${energy}%`;
+
+      // Делаем кнопку недоступной, если энергия закончилась
+      const clickButton = document.getElementById('click-button');
+      clickButton.disabled = energy <= 0;
+    };
+
     document.getElementById('click-button').addEventListener('click', () => {
-      clicks += earningsPerClick;
-      document.getElementById('click-count').textContent = `Кликов: ${clicks.toFixed(1)}`;
+      if (energy > 0) {
+        clicks += earningsPerClick;
+        energy -= energyCostPerClick;
 
-      // Обновление прогресс-бара
-      const progressPercentage = (clicks % 10) * 10;
-      document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+        updateUI();
 
-      // Обновление таблицы лидеров
-      const leaderboard = document.getElementById('leaderboard');
-      leaderboard.innerHTML = `<tr><td>Вы</td><td>${clicks.toFixed(1)}</td></tr>`;
+        // Обновление таблицы лидеров
+        const leaderboard = document.getElementById('leaderboard');
+        leaderboard.innerHTML = `<tr><td>Вы</td><td>${clicks.toFixed(1)}</td></tr>`;
+      }
     });
+
+    // Восстановление энергии каждую секунду
+    setInterval(() => {
+      if (energy < 100) {
+        energy += 5; // Восстанавливаем 5 энергии в секунду
+        if (energy > 100) energy = 100; // Энергия не может быть больше 100
+        updateUI();
+      }
+    }, 1000);
+
+    // Первоначальное обновление UI
+    updateUI();
   </script>
 </body>
 </html>
