@@ -166,11 +166,15 @@
 
     // Генерация реферальной ссылки
     const generateReferralLink = () => {
-      const botUsername = "Ваш_бот"; // Укажите username вашего бота
-      const refID = "user123"; // Уникальный ID текущего пользователя
+      const botUsername = "HYYYYYYYYYYYYYYYYYibot"; // Укажите username вашего бота
+      const userId = Math.floor(Math.random() * 100000); // Генерация случайного уникального ID
+      const refID = `user${userId}`; // Формат реферального ID
       const telegramLink = `https://t.me/${botUsername}?start=${refID}`;
       referralLinkEl.querySelector('a').href = telegramLink;
       referralLinkEl.querySelector('a').textContent = telegramLink;
+
+      // Сохраняем ID пользователя
+      localStorage.setItem('userId', refID);
     };
 
     // Клик по кнопке
