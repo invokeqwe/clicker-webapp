@@ -6,39 +6,77 @@
   <title>Кликер</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(120deg, #84fab0, #8fd3f4);
-      text-align: center;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(120deg, #74ebd5, #acb6e5);
+      color: #333;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #4A90E2;
+      margin: 0;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
     }
 
     .info {
-      margin: 10px 0;
-      font-size: 18px;
-      color: #333;
+      margin: 20px 0;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 20px;
-      background-color: #4CAF50;
+      background: linear-gradient(90deg, #4caf50, #66bb6a);
       color: white;
       border: none;
+      padding: 15px 30px;
+      font-size: 1rem;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    button:disabled {
-      background-color: #ccc;
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+      transform: scale(0.98);
+      background: linear-gradient(90deg, #388e3c, #4caf50);
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #666;
     }
   </style>
 </head>
 <body>
-  <h1>Кликер</h1>
-  <p class="info" id="clicks">Очки: 0</p>
-  <button id="click-button">Кликнуть</button>
+  <div class="container">
+    <h1>Кликер</h1>
+    <p class="info" id="clicks">Очки: 0</p>
+    <button id="click-button">Кликнуть</button>
+    <footer>Добейся лучшего результата!</footer>
+  </div>
 
   <script>
     let clicks = 0;
