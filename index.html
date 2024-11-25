@@ -3,114 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Кликер с Таблицей Лидеров</title>
+  <title>Кликер</title>
   <style>
+    /* Основной стиль */
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      background: linear-gradient(120deg, #84fab0, #8fd3f4);
       text-align: center;
-      padding: 20px;
+      color: #333;
     }
+
     button {
-      padding: 10px 20px;
-      font-size: 18px;
+      padding: 15px 30px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      margin: 10px;
+      transition: transform 0.1s ease, background-color 0.3s ease;
     }
-    .leaderboard {
-      margin-top: 20px;
-      text-align: left;
+
+    button:active {
+      transform: scale(0.9);
+      background-color: #45a049;
     }
-    .leaderboard table {
-      margin: 0 auto;
+
+    .progress-bar {
+      width: 80%;
+      background-color: #ddd;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 20px auto;
+    }
+
+    .progress {
+      height: 20px;
+      background-color: #4CAF50;
+      transition: width 0.3s ease;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
       border-collapse: collapse;
     }
-    .leaderboard th, .leaderboard td {
+
+    th, td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 10px;
+      text-align: center;
     }
-    .leaderboard th {
+
+    th {
       background-color: #4CAF50;
       color: white;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #ddd;
+    }
+
+    #achievement {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      animation: fadeInOut 3s forwards;
+      display: none;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <div id="app"></div>
+  <h1>Кликер</h1>
+  <p id="click-count">Кликов: 0</p>
+  <button id="click-button">Кликнуть</button>
+
+  <div class="progress-bar">
+    <div class="progress" id="progress-bar"></div>
+  </div>
+
+  <div id="achievement">Достижение разблокировано!</div>
+
+  <div class="leaderboard">
+    <h2>Таблица лидеров</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Имя</th>
+          <th>Клики</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard">
+        <tr><td>Вы</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <script>
-    // Основной компонент приложения
-    class App {
-      constructor() {
-        this.clicks = 0;
-        this.leaderboard = [
-          { name: 'User1', clicks: 50 },
-          { name: 'User2', clicks: 30 },
-          { name: 'User3', clicks: 20 },
-        ];
+    let clicks = 0;
+
+    document.getElementById('click-button').addEventListener('click', () => {
+      clicks++;
+      document.getElementById('click-count').textContent = `Кликов: ${clicks}`;
+      document.getElementById('progress-bar').style.width = `${clicks % 100}%`;
+
+      if (clicks % 10 === 0) {
+        const achievement = document.getElementById('achievement');
+        achievement.style.display = 'block';
+        setTimeout(() => achievement.style.display = 'none', 3000);
       }
 
-      init() {
-        this.render();
-      }
-
-      handleClick = () => {
-        this.clicks++;
-        this.updateLeaderboard('Вы', this.clicks);
-        this.render();
-      };
-
-      updateLeaderboard = (name, clicks) => {
-        const existingUser = this.leaderboard.find(user => user.name === name);
-        if (existingUser) {
-          existingUser.clicks = clicks;
-        } else {
-          this.leaderboard.push({ name, clicks });
-        }
-        this.leaderboard.sort((a, b) => b.clicks - a.clicks);
-      };
-
-      render() {
-        const appDiv = document.getElementById('app');
-        appDiv.innerHTML = `
-          <h1>Кликер</h1>
-          <p>Кликов: ${this.clicks}</p>
-          <button id="clickButton">Кликнуть</button>
-          <div class="leaderboard">
-            <h2>Таблица лидеров</h2>
-            ${this.renderLeaderboard()}
-          </div>
-        `;
-
-        // Привязываем событие клика к кнопке
-        document.getElementById('clickButton').addEventListener('click', this.handleClick);
-      }
-
-      renderLeaderboard() {
-        return `
-          <table>
-            <thead>
-              <tr>
-                <th>Имя</th>
-                <th>Клики</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${this.leaderboard.map(user => `
-                <tr>
-                  <td>${user.name}</td>
-                  <td>${user.clicks}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        `;
-      }
-    }
-
-    // Инициализация приложения
-    const app = new App();
-    app.init();
-  </script>
-</body>
-</html>
+      const leaderboard = document.getElementById('leaderboard');
+      leaderboard.innerHTML = `<tr><td>Вы</td><td>${clicks}</td></tr>`;
+   
