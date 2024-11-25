@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>вагина дани</title>
+  <title>Кликер</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -92,7 +92,7 @@
 <body>
   <div class="container">
     <h1>Кликер</h1>
-    <p class="info" id="clicks">Очко(дани): 0</p>
+    <p class="info" id="clicks">Очки: 0</p>
     <p class="info" id="energy">Энергия: 1000 / 1000</p>
     <p class="info" id="earnings">Доход за клик: 1</p>
     <div class="energy-bar">
@@ -100,7 +100,7 @@
     </div>
     <button id="click-button">Кликнуть</button>
     <p class="info" id="referral-link">Ваша реферальная ссылка: <a href="#">Генерация...</a></p>
-    <footer>Бля купите мне талки</footer>
+    <footer>Добейся лучшего результата!</footer>
   </div>
 
   <script>
@@ -148,10 +148,10 @@
     // Обработка реферальной ссылки
     const processReferral = () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const referrer = urlParams.get('ref');
+      const referrer = urlParams.get('start');
       if (referrer) {
         // Если перешли по реферальной ссылке
-        localStorage.setItem('referrer', referrer); // Сохраняем ID реферера
+        localStorage.setItem('referrer', referrer);
       }
     };
 
@@ -166,9 +166,11 @@
 
     // Генерация реферальной ссылки
     const generateReferralLink = () => {
-      const refID = 'user123'; // Замените на ID текущего пользователя
-      referralLinkEl.querySelector('a').href = `${window.location.origin}?ref=${refID}`;
-      referralLinkEl.querySelector('a').textContent = `${window.location.origin}?ref=${refID}`;
+      const botUsername = "Ваш_бот"; // Укажите username вашего бота
+      const refID = "user123"; // Уникальный ID текущего пользователя
+      const telegramLink = `https://t.me/${botUsername}?start=${refID}`;
+      referralLinkEl.querySelector('a').href = telegramLink;
+      referralLinkEl.querySelector('a').textContent = telegramLink;
     };
 
     // Клик по кнопке
