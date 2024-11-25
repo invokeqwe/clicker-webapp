@@ -3,190 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Кликер с сохранением данных</title>
+  <title>Кликер</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(120deg, #84fab0, #8fd3f4);
       text-align: center;
-      color: #333;
       margin: 0;
       padding: 0;
     }
 
+    .info {
+      margin: 10px 0;
+      font-size: 18px;
+      color: #333;
+    }
+
     button {
-      padding: 15px 30px;
+      padding: 10px 20px;
       font-size: 20px;
-      font-weight: bold;
-      color: #fff;
       background-color: #4CAF50;
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: transform 0.1s ease, background-color 0.3s ease;
-    }
-
-    button:active {
-      transform: scale(0.9);
-      background-color: #45a049;
+      margin-top: 20px;
     }
 
     button:disabled {
       background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    .progress-bar {
-      width: 80%;
-      background-color: #ddd;
-      border-radius: 20px;
-      overflow: hidden;
-      margin: 20px auto;
-    }
-
-    .progress {
-      height: 20px;
-      background-color: #4CAF50;
-      transition: width 0.3s ease;
-    }
-
-    .leaderboard {
-      margin: 20px auto;
-      width: 80%;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-    }
-
-    th {
-      background-color: #4CAF50;
-      color: white;
-      font-weight: bold;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
-    tr:hover {
-      background-color: #ddd;
     }
   </style>
 </head>
 <body>
-  <h1>Кликер с сохранением данных</h1>
-  <p id="click-count">Очки: 0</p>
-  <p id="energy-count">Энергия: 100</p>
+  <h1>Кликер</h1>
+  <p class="info" id="clicks">Очки: 0</p>
+  <p class="info" id="earnings">Доход за клик: 1.0</p>
   <button id="click-button">Кликнуть</button>
 
-  <div class="progress-bar">
-    <div class="progress" id="progress-bar"></div>
-  </div>
-
-  <div class="leaderboard">
-    <h2>Таблица лидеров</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Имя</th>
-          <th>Очки</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard">
-        <tr><td>Вы</td><td>0</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <p id="referral-info"></p>
-
   <script>
-    const MAX_ENERGY = 100;
-    const ENERGY_COST_PER_CLICK = 10;
-    const ENERGY_REGEN_RATE = 5; // Восстановление энергии в секунду
-
     let clicks = 0;
-    let earningsPerClick = 1; // Базовый доход за клик
-    let energy = MAX_ENERGY;
-    let lastTimestamp = Date.now(); // Для расчёта энергии при входе
+    let earningsPerClick = 1.0;
 
-    // Загружаем сохранённые данные
-    const loadData = () => {
-      const savedClicks = localStorage.getItem('clicks');
-      const savedEnergy = localStorage.getItem('energy');
-      const savedTimestamp = localStorage.getItem('lastTimestamp');
-      
-      clicks = savedClicks ? parseFloat(savedClicks) : 0;
-      energy = savedEnergy ? parseInt(savedEnergy) : MAX_ENERGY;
-      lastTimestamp = savedTimestamp ? parseInt(savedTimestamp) : Date.now();
-
-      // Восстанавливаем энергию на основе времени простоя
-      const timeElapsed = Math.floor((Date.now() - lastTimestamp) / 1000); // в секундах
-      const energyRegen = Math.min(MAX_ENERGY, energy + timeElapsed * ENERGY_REGEN_RATE);
-      energy = energyRegen > MAX_ENERGY ? MAX_ENERGY : energyRegen;
-    };
-
-    // Сохраняем данные
-    const saveData = () => {
-      localStorage.setItem('clicks', clicks.toFixed(1));
-      localStorage.setItem('energy', energy);
-      localStorage.setItem('lastTimestamp', Date.now());
-    };
-
+    // Обновляем UI
     const updateUI = () => {
-      // Обновляем UI
-      document.getElementById('click-count').textContent = `Очки: ${clicks.toFixed(1)}`;
-      document.getElementById('energy-count').textContent = `Энергия: ${energy}`;
-      document.getElementById('progress-bar').style.width = `${energy}%`;
-
-      // Делаем кнопку недоступной, если энергия закончилась
-      const clickButton = document.getElementById('click-button');
-      clickButton.disabled = energy <= 0;
-
-      // Обновляем таблицу лидеров
-      const leaderboard = document.getElementById('leaderboard');
-      leaderboard.innerHTML = `<tr><td>Вы</td><td>${clicks.toFixed(1)}</td></tr>`;
+      document.getElementById('clicks').textContent = `Очки: ${clicks}`;
+      document.getElementById('earnings').textContent = `Доход за клик: ${earningsPerClick.toFixed(1)}`;
     };
 
     document.getElementById('click-button').addEventListener('click', () => {
-      if (energy > 0) {
-        clicks += earningsPerClick;
-        energy -= ENERGY_COST_PER_CLICK;
-
-        updateUI();
-        saveData();
-      }
+      clicks += earningsPerClick;
+      updateUI();
     });
 
-    // Регенерация энергии
-    setInterval(() => {
-      if (energy < MAX_ENERGY) {
-        energy += ENERGY_REGEN_RATE;
-        if (energy > MAX_ENERGY) energy = MAX_ENERGY;
-
-        updateUI();
-        saveData();
-      }
-    }, 1000);
-
-    // Реферальная система
-    const urlParams = new URLSearchParams(window.location.search);
-    const referrer = urlParams.get('ref');
-    if (referrer) {
-      earningsPerClick += 0.2; // Увеличиваем доход за клик
-      document.getElementById('referral-info').textContent = `Вы перешли по реферальной ссылке. Ваш доход за клик: ${earningsPerClick.toFixed(1)}`;
-    }
-
     // Инициализация
-    loadData();
     updateUI();
   </script>
 </body>
