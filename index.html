@@ -163,13 +163,15 @@
       clickButton.disabled = energy < energyCostPerClick;
     };
 
-    // Генерация реферальной ссылки
+    // Генерация реферальной ссылки (Генерируем только один раз и сохраняем)
     const generateReferralLink = () => {
+      let userId = localStorage.getItem('userId'); // Проверка, сохранён ли уже userId
+      if (!userId) {  // Если нет, генерируем и сохраняем новый
+        userId = `user${Math.floor(Math.random() * 100000)}`;
+        localStorage.setItem('userId', userId); // Сохраняем уникальный userId
+      }
       const botUsername = "HYYYYYYYYYYYYYYYYYibot"; // Укажите username вашего бота
-      const userId = localStorage.getItem('userId') || Math.floor(Math.random() * 100000); // Генерация уникального ID
-      const refID = `user${userId}`; // Генерация реферального ID
-      localStorage.setItem('userId', refID); // Сохраняем ID пользователя для дальнейшего использования
-      const telegramLink = `https://t.me/${botUsername}?start=${refID}`;
+      const telegramLink = `https://t.me/${botUsername}?start=${userId}`;
       referralLinkEl.querySelector('a').href = telegramLink;
       referralLinkEl.querySelector('a').textContent = telegramLink;
     };
